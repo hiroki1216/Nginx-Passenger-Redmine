@@ -1,0 +1,38 @@
+##
+# phusion/passenger-docker
+# https://github.com/phusion/passenger-docker
+
+##
+# Getting started
+
+# Ruby images
+FROM phusion/passenger-ruby31:latest 
+
+##
+# Nginx
+# Using Nginx and Passenger
+RUN rm -f /etc/service/nginx/down
+
+# Using Nginx and Passenger
+RUN rm /etc/nginx/sites-enabled/default
+
+EXPOSE 80
+
+# Clean up APT when done.
+RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+#make directory for logs of passenger and grant permission to access that for nginx user(www-data) 
+RUN mkdir -p /var/www/.passenger
+RUN chown www-data:www-data /var/www/.passenger
+
+#configure /etc/nginx/conf.d/
+COPY ./nginx/conf.d/webapp.conf /etc/nginx/conf.d
+
+#arrange Redmine,bundle install and initialize daemon
+COPY start.sh /start.sh
+
+RUN chmod 744 /start.sh
+
+# Use baseimage-docker's init process.
+CMD ["/start.sh"]
+

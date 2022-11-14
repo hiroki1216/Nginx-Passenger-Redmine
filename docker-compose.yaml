@@ -1,0 +1,19 @@
+version: '3.9'
+services:
+  passenger:
+    build: ./passenger
+    ports:
+      - 8091:80
+    depends_on:
+      - redmine
+    volumes:
+      - ./redmine/src/redmine:/home/app/webapp
+      - ./logs/nginx:/var/log/nginx
+    container_name: passenger
+  redmine:
+    build: ./redmine
+    restart: always
+    volumes:
+      - ./redmine/src:/var/www/html
+    container_name: redmine
+
